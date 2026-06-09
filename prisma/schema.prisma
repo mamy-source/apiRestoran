@@ -1,0 +1,324 @@
+// ===============================
+// CONFIGURATION & DATASOURCE
+// ===============================
+
+/// Client generator - Prisma client JS
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// Mysql as our main database
+datasource db {
+  provider = "mysql"
+}
+
+// ===============================
+// ENUMERATIONS
+// ===============================
+
+/// Role definitions for users in the system
+enum Role {
+  ADMIN
+  MANAGER
+  WAITER
+  CHEF
+  CASHIER
+  CLIENT        
+  GUEST         
+}
+
+/// Physical table occupancy status
+enum TableStatus {
+  FREE
+  RESERVED
+  OCCUPIED
+}
+
+/// Order source: online vs in-restaurant
+enum OrderSource {
+  ONLINE         
+  IN_RESTAURANT  
+}
+
+/// Lifecycle status of an order
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  SERVED
+  PAID
+  CANCELLED
+}
+
+/// Available payment methods
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE_MONEY
+}
+
+/// Payment transaction status
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+// ===============================
+// MODELS
+// ===============================
+
+/// User: Clients manana compte + Guests
+model User {
+  id           String    @id @default(uuid())
+  fullName     String    @map("full_name")
+  email        String?   @unique
+  password     String?   
+  avatar       String?
+  role         Role      @default(GUEST)
+
+  refreshToken String?   @map("refresh_token")
+  
+ 
+  phoneNumber    String?  @map("phone_number")
+  
+  // For the loyalty program (raha CLIENT manana compte)
+  loyaltyPoints  Int      @default(0) @map("loyalty_points")
+  totalSpent     Decimal  @default(0) @db.Decimal(10, 2) @map("total_spent")
+  orderCount     Int      @default(0) @map("order_count")
+  lastOrderAt    DateTime? @map("last_order_at")
+  
+  // Ho an'ny GUEST (session tsy mila compte)
+  guestSessionId String? @map("guest_session_id")
+
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+
+  // Relations (FANITSANA: nomena anarana ny relation rehetra)
+  ordersClient    Order[]        @relation("ClientOrders")     // Ho an'ny CLIENT
+  ordersWaiter    Order[]        @relation("WaiterOrders")     // Ho an'ny WAITER
+  loyaltyHistory  LoyaltyHistory[]
+  guestSessions   GuestSession[]  // FANITSANA: nampiana ny opposite field
+  auditLogs       AuditLog[]
+
+  @@unique([email, deletedAt])
+  @@index([guestSessionId])
+  @@index([role])
+  @@index([orderCount])
+  @@index([loyaltyPoints])
+  @@map("users")
+}
+
+/// Category: menu grouping
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  image       String?
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  menus       Menu[]
+
+  @@map("categories")
+}
+
+/// Menu: actual product offered
+model Menu {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  image       String?
+
+  price       Decimal   @db.Decimal(10, 2)
+  available   Boolean   @default(true)
+  availableOnline Boolean @default(true) @map("available_online")
+
+  categoryId  String    @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id])
+
+  orderItems  OrderItem[]
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@index([categoryId])
+  @@map("menus")
+}
+
+/// RestaurantTable: physical table in the restaurant
+model RestaurantTable {
+  id          String       @id @default(uuid())
+  number      Int          @unique
+  capacity    Int
+  status      TableStatus  @default(FREE)
+
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  orders      Order[]
+
+  @@map("restaurant_tables")
+}
+
+/// Order: Commande (avy amin'ny CLIENT manana compte na GUEST)
+model Order {
+  id          String       @id @default(uuid())
+
+  tableId     String?      @map("table_id")
+  waiterId    String?      @map("waiter_id")
+  userId      String?      @map("user_id")   
+  
+  source      OrderSource  @default(IN_RESTAURANT)
+  
+  status      OrderStatus  @default(PENDING)
+  total       Decimal      @default(0) @db.Decimal(10, 2)
+  
+  // Ho an'ny commande en ligne (CLIENT na GUEST)
+  customerName    String?  @map("customer_name")
+  customerPhone   String?  @map("customer_phone")
+  deliveryAddress String?  @map("delivery_address")
+  specialNote     String?  @map("special_note")
+  
+  // Loyalty: ho an'ny CLIENT manana compte ihany
+  pointsEarned    Int      @default(0) @map("points_earned")
+
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations 
+  table       RestaurantTable? @relation(fields: [tableId], references: [id])
+  waiter      User?            @relation("WaiterOrders", fields: [waiterId], references: [id])
+  user        User?            @relation("ClientOrders", fields: [userId], references: [id])
+
+  items       OrderItem[]
+  payment     Payment?
+  invoice     Invoice?
+  
+  // History of loyalty points for this order (raha CLIENT manana compte)
+  loyaltyRecord LoyaltyHistory?
+
+  @@index([tableId, status])
+  @@index([waiterId])
+  @@index([userId])
+  @@index([source])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@map("orders")
+}
+
+/// OrderItem: item in an order, linking Menu and Order with quantity and price details
+model OrderItem {
+  id          String    @id @default(uuid())
+
+  orderId     String    @map("order_id")
+  menuId      String    @map("menu_id")
+
+  quantity    Int
+  unitPrice   Decimal   @db.Decimal(10, 2)
+  subtotal    Decimal   @db.Decimal(10, 2)
+
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menu        Menu      @relation(fields: [menuId], references: [id])
+
+  @@unique([orderId, menuId])
+  @@map("order_items")
+}
+
+/// Payment: payment details for an order, including method, status, and transaction info
+model Payment {
+  id          String         @id @default(uuid())
+  orderId     String         @unique @map("order_id") 
+
+  amount      Decimal        @db.Decimal(10, 2)
+  method      PaymentMethod
+  status      PaymentStatus  @default(PENDING)
+
+  paidAt      DateTime?      @map("paid_at")
+
+  transactionRef String?      @map("transaction_ref")
+  paymentGateway  String?     @map("payment_gateway")
+
+  order       Order          @relation(fields: [orderId], references: [id])  
+
+  @@map("payments")
+}
+
+/// Invoice: invoice details for an order, including invoice number and PDF URL if generated
+model Invoice {
+  id            String    @id @default(uuid())
+  orderId       String    @unique @map("order_id")
+
+  invoiceNumber String    @unique @map("invoice_number")
+  pdfUrl        String?   @map("pdf_url")
+
+  generatedAt   DateTime  @default(now()) @map("generated_at")
+
+  order         Order     @relation(fields: [orderId], references: [id])  
+
+  @@map("invoices")
+}
+
+// ===============================
+// LOYALTY
+// ===============================
+
+/// LoyaltyHistory: History of loyalty points for a user, including actions that earned points and descriptions for surprises or bonuses
+model LoyaltyHistory {
+  id          String    @id @default(uuid())
+  
+  userId      String    @map("user_id")
+  orderId       String    @unique @map("order_id")
+  
+  action      String    // "ORDER_COMPLETED", "BIRTHDAY", "SURPRISE_GIFT", "LOYALTY_BONUS"
+  points      Int       // Points earned or used for this action
+  description String?   // Optional description for surprises or bonuses
+  
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  user        User      @relation(fields: [userId], references: [id])
+  order       Order     @relation(fields: [orderId], references: [id])
+  
+  @@unique([orderId, userId])
+  @@index([userId, createdAt])
+  @@map("loyalty_histories")
+}
+
+/// GuestSession: Session management for guests, allowing them to have a temporary session with device and IP info, and optionally link to a user account if they later create one
+model GuestSession {
+  id          String    @id @default(uuid())
+  sessionToken String   @unique @map("session_token")
+
+  deviceInfo  String?   @map("device_info")
+  ipAddress   String?   @map("ip_address")
+
+  expiresAt   DateTime  @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  userId      String?   @map("user_id")  // Optional link to a User if they create an account later
+  user        User?     @relation(fields: [userId], references: [id]) 
+
+  @@map("guest_sessions")
+}
+
+/// AuditLog: Logging user actions for auditing purposes, including the action performed, the entity affected, and timestamps. This can be used for security audits, tracking changes, and monitoring user activity.
+model AuditLog {
+  id          String    @id @default(uuid())
+  userId      String?   @map("user_id")
+  guestSessionId String? @map("guest_session_id")
+
+  action      String
+  entity      String
+  entityId    String    @map("entity_id")
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user        User?     @relation(fields: [userId], references: [id])  
+
+  @@index([userId, createdAt])
+  @@index([guestSessionId])
+  @@map("audit_logs")
+}
