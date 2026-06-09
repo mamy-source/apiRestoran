@@ -1,0 +1,5 @@
+allowBuilds:
+  '@prisma/engines': false
+  argon2: true
+  prisma: true
+  sharp: true
