@@ -77,7 +77,7 @@ model User {
   avatar       String?
   role         Role      @default(GUEST)
 
-  refreshToken String?   @map("refresh_token")
+  refreshToken String?   @map("refresh_token") @db.LongText
   
  
   phoneNumber    String?  @map("phone_number")

@@ -3,7 +3,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from ".
 import AuthRepository from "../repository/auth.repository.js";
 import logger from "../libs/logger.lib.js";
 import { AppError } from "../middlewares/error.middleware.js";
-import { id } from "zod/locales";
+
 
 
 class AuthService {
@@ -20,17 +20,21 @@ class AuthService {
         const hashedPassword = await hashPassword(password);
 
         //role
+        let role;
         const count = await AuthRepository.usersCout();
         if(count === 0){
             role = 'ADMIN';
+        }else{
+            role = 'CLIENT';
         }
+
         //create user
         const user =  await AuthRepository.createUser({
             email,
             password: hashedPassword,
             fullName,
             phoneNumber,
-            role: role || 'USER',
+            role: role,
         });
 
         //Generate tokens
@@ -162,7 +166,7 @@ class AuthService {
             email,
             password: hashedPassword,
             fullName,
-            role: 'CUSTOMER',
+            role: 'CLIENT',
             loyaltyPoints: 0,
             totalSpent: 0,
             orderCount: 0,

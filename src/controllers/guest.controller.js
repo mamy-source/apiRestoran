@@ -1,7 +1,7 @@
 import GuestService from "../services/guest.service.js";
 import { sendSuccess, sendCreated } from "../utils/response.js";
 import { asyncHandler } from "../middlewares/error.middleware.js";
-import { createGuestSessionValidator, updateGuestValidator } from "../validations/guest.validators";
+import { createGuestSessionValidator, updateGuestValidator } from "../validations/guest.validators.js";
 
 
 export const createGuestSession = asyncHandler(async (req, res) => {

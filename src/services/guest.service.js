@@ -1,5 +1,5 @@
-import prisma from "../config/prisma";
-import randomUUID from "crypto";
+import prisma from "../config/prisma.js";
+import {randomUUID} from "crypto";
 import logger from "../libs/logger.lib.js";
 
 

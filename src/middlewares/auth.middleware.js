@@ -1,6 +1,6 @@
-import { verifyAccessToken } from "../libs/jwt.lib";
-import prisma from "../config/prisma";
-import { sendError } from "../utils/response";
+import { verifyAccessToken } from "../libs/jwt.lib.js";
+import prisma from "../config/prisma.js";
+import { sendError } from "../utils/response.js";
 import logger from "../libs/logger.lib.js";
 
 

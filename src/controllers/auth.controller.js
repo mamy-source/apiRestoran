@@ -1,7 +1,7 @@
 import AuthService from "../services/auth.service.js";
 import { registerSchema, loginSchema, refreshTokenSchema, upgradeToClientSchema, validate } from "../validations/auth.validators.js";
 import { sendSuccess, sendCreated } from "../utils/response.js";
-import { asyncHandler } from "../middlewares/error.middleware";
+import { asyncHandler } from "../middlewares/error.middleware.js";
 
 
 //Register
@@ -50,6 +50,12 @@ export const refreshToken = asyncHandler(async (req, res)=>{
 export const logout = asyncHandler(async (req, res)=>{
     await AuthService.logout(req.user.id);
     return sendSuccess(res, null, 'User logged out successfully');
+});
+
+//get profile
+export const getProfile = asyncHandler(async (req, res)=>{
+    const result = await AuthService.getProfile(req.user.id);
+    return sendSuccess(res, result, 'User profile retrieved successfully');
 });
 
 //Upgrade guest to customer
