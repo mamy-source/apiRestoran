@@ -52,11 +52,6 @@ export const logout = asyncHandler(async (req, res)=>{
     return sendSuccess(res, null, 'User logged out successfully');
 });
 
-//get profile
-export const getProfile = asyncHandler(async (req, res)=>{
-    const result = await AuthService.getProfile(req.user.id);
-    return sendSuccess(res, result, 'User profile retrieved successfully');
-});
 
 //Upgrade guest to customer
 export const upgradeToClient = asyncHandler(async (req, res)=>{

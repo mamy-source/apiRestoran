@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoutes from "./auth.routes.js";
 import guestRoutes from "./guest.routes.js";
+import userRoutes from "./user.routes.js";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.get("/health", (req, res) => {
 //API routes
 router.use("/auth", authRoutes);
 router.use("/guest", guestRoutes);
+router.use("/users", userRoutes);   // Profile + Admin
 
 // 404 handler
 router.use((req, res) => {

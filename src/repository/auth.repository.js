@@ -41,15 +41,35 @@ class AuthRepository {
         });
     }
 
-    async getUserWithOrders(userId){
+    async getUserWithOrders(userId) {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                role: true
+            }
+        });
+    
         return await prisma.user.findUnique({
             where: { id: userId },
             include: {
-                orders: {
-                    orderBy: { createdAt: 'desc' },
-                    take: 10,
-                },
-            },
+                ordersClient: user.role === 'CLIENT'
+                    ? {
+                        orderBy: {
+                            createdAt: 'desc'
+                        },
+                        take: 10
+                    }
+                    : false,
+    
+                ordersWaiter: user.role === 'WAITER'
+                    ? {
+                        orderBy: {
+                            createdAt: 'desc'
+                        },
+                        take: 10
+                    }
+                    : false
+            }
         });
     }
 

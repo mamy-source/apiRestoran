@@ -4,7 +4,6 @@ import {
   login,
   refreshToken,
   logout,
-  getProfile,
   upgradeToClient,
 } from '../controllers/auth.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
@@ -20,6 +19,4 @@ authRoutes.post('/upgrade-to-customer', guestProtect, upgradeToClient);
 
 // Protected routes (need authentication)
 authRoutes.post('/logout', protect, logout);
-authRoutes.get('/profile', protect, getProfile);
-
 export default authRoutes;

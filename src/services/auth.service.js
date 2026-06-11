@@ -123,25 +123,6 @@ class AuthService {
         return true;
     }
 
-    //get user profile
-    async getProfile(userId){
-        const user = await AuthRepository.getUserWithOrders(userId);
-        if (!user) {
-            throw new AppError('User not found', 404);
-        }
-
-        return {
-            id: user.id,
-            email: user.email,
-            fullName: user.fullName,
-            phoneNumber: user.phoneNumber,
-            role: user.role,
-            loyaltyPoints: user.loyaltyPoints,
-            totalSpent: user.totalSpent,
-            orderCount: user.orderCount,
-            recentOrders: user.orders
-        };
-    }
 
     //upgrade guest to customer
     async upgradeGuestToClient(guestId, email, password, fullName) {
