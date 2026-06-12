@@ -2,6 +2,8 @@ import { Router } from "express";
 import authRoutes from "./auth.routes.js";
 import guestRoutes from "./guest.routes.js";
 import userRoutes from "./user.routes.js";
+import routerCategory from "./category.routes.js";
+import routerMenu from "./menu.routes.js";
 
 const router = Router();
 
@@ -16,6 +18,8 @@ router.get("/health", (req, res) => {
 router.use("/auth", authRoutes);
 router.use("/guest", guestRoutes);
 router.use("/users", userRoutes);   // Profile + Admin
+router.use("/categories", routerCategory);
+router.use("/menus", routerMenu);
 
 // 404 handler
 router.use((req, res) => {
