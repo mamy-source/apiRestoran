@@ -25,7 +25,7 @@ export const createCategory = asyncHandler(async(req, res) =>{
         errors,
         });
     }
-    const result = await CategoryService.createCategory(valid.data, req.file);
+    const result = await CategoryService.createCategory(data, req.file);
     return sendCreated(res, result, 'Category created with success');
 });
 

@@ -23,6 +23,9 @@ class CategoryService{
 
     //create category
     async createCategory(data, categoryFile){
+        if (!data) {
+            throw new AppError('Category data is required', 400);
+        }
         const existing = await CategoryRepository.findByName(data.name);
         if (existing) {
         throw new AppError('This category is already exists', 400);
@@ -36,13 +39,14 @@ class CategoryService{
                 height: 400,
                 quality: 80,
             });
+            imageUrl = processed.path;
         }
-        imageUrl = processed.path;
+        
 
         const category = await CategoryRepository.createCategory({
             name: data.name,
-            description: data.description,
             image: imageUrl,
+            description: data.description,
         });
         logger.logEvent('CATEGORY_CREATED', null, {
             categoryId: category.id, 

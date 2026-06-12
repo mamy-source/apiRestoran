@@ -1,6 +1,4 @@
-import { _nativeEnum } from "zod/v4/core";
 import prisma from "../config/prisma.js";
-import { describe } from "zod/mini";
 
 class CategoryRepository {
     async findCategoryById(id){
@@ -27,7 +25,7 @@ class CategoryRepository {
     async findByName(name) {
         return prisma.category.findFirst({
         where: { 
-            name: { equals: name, mode: 'insensitive' },
+            name: { equals: name, lte: 'insensitive' },
             deletedAt: null,
         },
         });

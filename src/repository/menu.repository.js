@@ -17,8 +17,8 @@ class MenuRepository {
     }
     if (filters.search) {
       where.OR = [
-        { name: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
+        { name: { contains: filters.search, lte: 'insensitive' } },
+        { description: { contains: filters.search, lte: 'insensitive' } },
       ];
     }
 
@@ -41,7 +41,7 @@ class MenuRepository {
   async findByName(name) {
     return prisma.menu.findFirst({
       where: { 
-        name: { equals: name, mode: 'insensitive' },
+        name: { equals: name, lte: 'insensitive' },
         deletedAt: null,
       },
     });
