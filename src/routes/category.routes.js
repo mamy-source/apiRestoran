@@ -10,14 +10,16 @@ import { protect, restrictTo } from "../middlewares/auth.middleware.js";
 import { uploadSingle } from "../middlewares/upload.middleware.js";
 
 
-const router = Router();
+const routerCategory = Router();
 
 //Public routes
-router.get('/', getAllCategories);
-router.get('/:id', getCategoryById);
+routerCategory.get('/', getAllCategories);
+routerCategory.get('/:id', getCategoryById);
 
 //Protected routes (Admin and Manager only)
-router.use(protect, restrictTo('ADMIN', 'MANAGER'));
-router.post('/', uploadSingle('categories', 'image'), createCategory);
-router.put('/:id', uploadSingle('categories', 'image'), updateCategory);
-router.delete('/:id', deleteCategory);
+routerCategory.use(protect, restrictTo('ADMIN', 'MANAGER'));
+routerCategory.post('/', uploadSingle('categories', 'image'), createCategory);
+routerCategory.put('/:id', uploadSingle('categories', 'image'), updateCategory);
+routerCategory.delete('/:id', deleteCategory);
+
+export default routerCategory;

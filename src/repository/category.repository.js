@@ -19,15 +19,7 @@ class CategoryRepository {
                     take: 5,
                 }
             },
-            select: {
-                id: true,
-                name: true,
-                description: true,
-                image: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-            orderBy: { _nativeEnum: 'asc' },
+            orderBy: { name: 'asc' },
         });
     }
 

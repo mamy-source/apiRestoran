@@ -13,19 +13,19 @@ import { protect, restrictTo } from "../middlewares/auth.middleware.js";
 import { uploadSingle } from "../middlewares/upload.middleware.js";
 
 
-const router = Router();
+const routerMenu = Router();
 
 // Public routes (anyone can view)
-router.get('/', getAllMenuItems);
-router.get('/:id', getMenuItemById);
-router.get('/category/:categoryId', getMenusByCategory);
+routerMenu.get('/', getAllMenuItems);
+routerMenu.get('/:id', getMenuItemById);
+routerMenu.get('/category/:categoryId', getMenusByCategory);
 
 // Admin only routes
-router.use(protect, restrictTo('ADMIN', 'MANAGER'));
-router.post('/', uploadSingle('menus', 'image'), createMenuItem);
-router.put('/:id', uploadSingle('menus', 'image'), updateMenuItem);
-router.delete('/:id', deleteMenuItem);
-router.patch('/:id/toggle-availability', toggleAvailability);
-router.patch('/:id/toggle-online', toggleOnlineAvailability);
+routerMenu.use(protect, restrictTo('ADMIN', 'MANAGER'));
+routerMenu.post('/', uploadSingle('menus', 'image'), createMenuItem);
+routerMenu.put('/:id', uploadSingle('menus', 'image'), updateMenuItem);
+routerMenu.delete('/:id', deleteMenuItem);
+routerMenu.patch('/:id/toggle-availability', toggleAvailability);
+routerMenu.patch('/:id/toggle-online', toggleOnlineAvailability);
 
-export default router;
+export default routerMenu;

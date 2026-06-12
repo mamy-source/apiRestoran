@@ -4,7 +4,7 @@ import { asyncHandler } from "../middlewares/error.middleware.js";
 import { categorySchema, validate } from "../validations/category.validators.js";
 
 //get all categories
-export const getAllCategory = asyncHandler(async(req, res) =>{
+export const getAllCategories = asyncHandler(async(req, res) =>{
     const categories = await CategoryService.getAllCategory();
     sendSuccess(res, categories, "List of category");
 });
@@ -16,7 +16,7 @@ export const getCategoryById = asyncHandler(async(req, res) =>{
 })
 
 //create category
-export const create = asyncHandler(async(req, res) =>{
+export const createCategory = asyncHandler(async(req, res) =>{
     const {valid, errors, data} = validate(categorySchema, req.body);
     if(!valid){
         return res.status(400).json({
@@ -30,7 +30,7 @@ export const create = asyncHandler(async(req, res) =>{
 });
 
 //update category
-export const update = asyncHandler(async(req, res) =>{
+export const updateCategory = asyncHandler(async(req, res) =>{
     const catId = req.category.id;
     const categoryFile = req.file;
 

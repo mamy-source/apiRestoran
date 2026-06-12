@@ -1,6 +1,6 @@
 import MenuRepository from "../repository/menu.repository.js";
 import CategoryRepository from "../repository/category.repository.js";
-import { processUploadedImage, deleteImage } from "../utils/imageProcessor.js";
+import { processUploadedImage, deleteImage } from "./image.service.js";
 import logger from "../libs/logger.lib.js";
 import { AppError } from "../middlewares/error.middleware.js";
 
