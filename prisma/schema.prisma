@@ -21,8 +21,6 @@ enum Role {
   ADMIN
   MANAGER
   WAITER
-  CHEF
-  CASHIER
   CLIENT        
   GUEST         
 }
@@ -68,7 +66,7 @@ enum PaymentStatus {
 // MODELS
 // ===============================
 
-/// User: Clients manana compte + Guests
+/// User: Customers and Guests
 model User {
   id           String    @id @default(uuid())
   fullName     String    @map("full_name")
@@ -82,24 +80,24 @@ model User {
  
   phoneNumber    String?  @map("phone_number")
   
-  // For the loyalty program (raha CLIENT manana compte)
+  // For the loyalty program (clients with accounts only)
   loyaltyPoints  Int      @default(0) @map("loyalty_points")
   totalSpent     Decimal  @default(0) @db.Decimal(10, 2) @map("total_spent")
   orderCount     Int      @default(0) @map("order_count")
   lastOrderAt    DateTime? @map("last_order_at")
   
-  // Ho an'ny GUEST (session tsy mila compte)
+  // For guest users, we can link them to a GuestSession for tracking their activity and orders without requiring an account)
   guestSessionId String? @map("guest_session_id")
 
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   deletedAt    DateTime? @map("deleted_at")
 
-  // Relations (FANITSANA: nomena anarana ny relation rehetra)
-  ordersClient    Order[]        @relation("ClientOrders")     // Ho an'ny CLIENT
-  ordersWaiter    Order[]        @relation("WaiterOrders")     // Ho an'ny WAITER
+  // Relations 
+  ordersClient    Order[]        @relation("ClientOrders")     
+  ordersWaiter    Order[]        @relation("WaiterOrders")     
   loyaltyHistory  LoyaltyHistory[]
-  guestSessions   GuestSession[]  // FANITSANA: nampiana ny opposite field
+  guestSessions   GuestSession[]  
   auditLogs       AuditLog[]
 
   @@unique([email, deletedAt])
@@ -114,6 +112,7 @@ model User {
 model Category {
   id          String    @id @default(uuid())
   name        String    @unique
+  description String?
   image       String?
 
   createdAt   DateTime  @default(now()) @map("created_at")
@@ -164,7 +163,7 @@ model RestaurantTable {
   @@map("restaurant_tables")
 }
 
-/// Order: Commande (avy amin'ny CLIENT manana compte na GUEST)
+/// Order: Commande 
 model Order {
   id          String       @id @default(uuid())
 
@@ -177,13 +176,13 @@ model Order {
   status      OrderStatus  @default(PENDING)
   total       Decimal      @default(0) @db.Decimal(10, 2)
   
-  // Ho an'ny commande en ligne (CLIENT na GUEST)
+  // For online orders or walk-ins without accounts, we can capture these details directly in the order for reference and delivery purposes
   customerName    String?  @map("customer_name")
   customerPhone   String?  @map("customer_phone")
   deliveryAddress String?  @map("delivery_address")
   specialNote     String?  @map("special_note")
   
-  // Loyalty: ho an'ny CLIENT manana compte ihany
+  // Loyalty: points earned for this order, which can be calculated based on total spent and any ongoing promotions. This allows us to track points at the order level for better reporting and history, even if the user later redeems points or changes their loyalty status.
   pointsEarned    Int      @default(0) @map("points_earned")
 
   createdAt   DateTime     @default(now()) @map("created_at")
@@ -198,7 +197,7 @@ model Order {
   payment     Payment?
   invoice     Invoice?
   
-  // History of loyalty points for this order (raha CLIENT manana compte)
+  // History of loyalty points for this order 
   loyaltyRecord LoyaltyHistory?
 
   @@index([tableId, status])
