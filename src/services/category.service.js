@@ -41,6 +41,7 @@ class CategoryService{
 
         const category = await CategoryRepository.createCategory({
             name: data.name,
+            description: data.description,
             image: imageUrl,
         });
         logger.logEvent('CATEGORY_CREATED', null, {
@@ -82,6 +83,7 @@ class CategoryService{
 
         const updateCategory = await CategoryRepository.updateCategory(catId, {
             name: data.name,
+            description: data.description !== undefined ? data.description : category.description,
             image: imageUrl,
         });
         logger.logEvent('PROFILE_UPDATED', null, {categoryId: catId});

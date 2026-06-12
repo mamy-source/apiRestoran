@@ -1,5 +1,6 @@
 import { _nativeEnum } from "zod/v4/core";
 import prisma from "../config/prisma.js";
+import { describe } from "zod/mini";
 
 class CategoryRepository {
     async findCategoryById(id){
@@ -21,6 +22,7 @@ class CategoryRepository {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 image: true,
                 createdAt: true,
                 updatedAt: true,
@@ -52,6 +54,7 @@ class CategoryRepository {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 image: true,
                 createdAt: true,
                 updatedAt: true,

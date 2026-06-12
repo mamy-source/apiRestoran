@@ -4,7 +4,8 @@ export const categorySchema = z.object({
     name: z.string()
         .min(2, "The name must be 2 charters")
         .max(100, "The name is very tall")
-        .nonempty('Name is required')
+        .nonempty('Name is required'),
+    description: z.string().max(255).optional(),
 })
 
 // Validation helper
