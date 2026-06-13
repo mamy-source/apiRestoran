@@ -5,6 +5,8 @@ import userRoutes from "./user.routes.js";
 import routerCategory from "./category.routes.js";
 import routerMenu from "./menu.routes.js";
 import routerTable from "./table.routes.js";
+import routerOrder from "./order.routes.js";
+import routerPayment from "./payment.routes.js";
 
 const router = Router();
 
@@ -22,6 +24,8 @@ router.use("/users", userRoutes);   // Profile + Admin
 router.use("/categories", routerCategory);
 router.use("/menus", routerMenu);
 router.use("/tables", routerTable);
+router.use("/orders", routerOrder);
+router.use("/payments", routerPayment);
 
 // 404 handler
 router.use((req, res) => {

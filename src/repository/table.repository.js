@@ -62,11 +62,10 @@ class TableRepository {
     });
   }
 
-  // Soft delete table
+  // Delete table
   async delete(id) {
-    return prisma.restaurantTable.update({
+    return prisma.restaurantTable.delete({
       where: { id },
-      data: { deletedAt: new Date() },
     });
   }
 

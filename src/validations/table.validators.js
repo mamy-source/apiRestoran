@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 export const createTableSchema = z.object({
-  number: z.number()
+  number: z.coerce.number()
     .int('Le numéro doit être un entier')
     .positive('Le numéro doit être positif'),
-  capacity: z.number()
+  capacity: z.coerce.number()
     .int()
     .min(1, 'La capacité doit être au moins 1')
     .max(20, 'La capacité maximale est 20'),
@@ -12,8 +12,8 @@ export const createTableSchema = z.object({
 });
 
 export const updateTableSchema = z.object({
-  number: z.number().int().positive().optional(),
-  capacity: z.number().int().min(1).max(20).optional(),
+  number: z.coerce.number().int().positive().optional(),
+  capacity: z.coerce.number().int().min(1).max(20).optional(),
   status: z.enum(['FREE', 'RESERVED', 'OCCUPIED']).optional(),
 });
 

@@ -1,5 +1,5 @@
 import TableRepository from "../repository/table.repository.js";
-import AppError from '../middlewares/error.middleware.js';
+import {AppError} from '../middlewares/error.middleware.js';
 import logger from '../libs/logger.lib.js';
 
 
