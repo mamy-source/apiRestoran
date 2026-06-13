@@ -4,6 +4,7 @@ import guestRoutes from "./guest.routes.js";
 import userRoutes from "./user.routes.js";
 import routerCategory from "./category.routes.js";
 import routerMenu from "./menu.routes.js";
+import routerTable from "./table.routes.js";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/guest", guestRoutes);
 router.use("/users", userRoutes);   // Profile + Admin
 router.use("/categories", routerCategory);
 router.use("/menus", routerMenu);
+router.use("/tables", routerTable);
 
 // 404 handler
 router.use((req, res) => {
