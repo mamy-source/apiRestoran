@@ -7,6 +7,7 @@ import routerMenu from "./menu.routes.js";
 import routerTable from "./table.routes.js";
 import routerOrder from "./order.routes.js";
 import routerPayment from "./payment.routes.js";
+import routerInvoice from "./invoice.routes.js";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use("/menus", routerMenu);
 router.use("/tables", routerTable);
 router.use("/orders", routerOrder);
 router.use("/payments", routerPayment);
+router.use("/invoices", routerInvoice);
 
 // 404 handler
 router.use((req, res) => {

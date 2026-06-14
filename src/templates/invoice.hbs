@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture {{invoiceNumber}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #fff;
+            {{#if (eq format "POS")}}padding: 10px;{{else}}padding: 40px;{{/if}}
+            {{#if (eq format "POS")}}font-size: 11px;{{else}}font-size: 14px;{{/if}}
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        /* Format POS (thermal printer) */
+        {{#if (eq format "POS")}}
+        .invoice-container {
+            max-width: 280px;
+            margin: 0 auto;
+            background: #fff;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            padding: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .invoice-header h1 {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .restaurant-name {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .info-section {
+            padding: 10px;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .info-box {
+            margin-bottom: 8px;
+        }
+        
+        .items-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .items-table th, .items-table td {
+            padding: 4px;
+            text-align: left;
+        }
+        
+        .totals-section {
+            padding: 10px;
+            border-top: 1px dashed #ccc;
+        }
+        
+        .invoice-footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 9px;
+        }
+        
+        .no-print {
+            display: none;
+        }
+        {{/if}}
+        
+        /* Format A4 */
+        {{#if (eq format "A4")}}
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .invoice-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .invoice-header h1 {
+            font-size: 28px;
+        }
+        
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .items-table {
+            padding: 20px 30px;
+        }
+        
+        .items-table th {
+            background: #f0f0f0;
+            padding: 12px 8px;
+        }
+        
+        .totals-section {
+            padding: 20px 30px;
+            border-top: 2px solid #e0e0e0;
+            background: #fafafa;
+        }
+        {{/if}}
+        
+        /* Format A5 */
+        {{#if (eq format "A5")}}
+        .invoice-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .invoice-header {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .invoice-header h1 {
+            font-size: 20px;
+        }
+        
+        .info-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: #f8f9fa;
+        }
+        
+        .info-box {
+            width: 45%;
+            margin-bottom: 10px;
+        }
+        
+        .items-table {
+            padding: 15px 20px;
+        }
+        
+        .totals-section {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        {{/if}}
+        
+        /* Format Thermal (58mm) */
+        {{#if (eq format "THERMAL")}}
+        .invoice-container {
+            max-width: 220px;
+            margin: 0 auto;
+            background: #fff;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .invoice-header h1 {
+            font-size: 14px;
+        }
+        
+        .restaurant-name {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .info-section {
+            padding: 8px;
+            font-size: 9px;
+        }
+        
+        .info-box {
+            margin-bottom: 5px;
+        }
+        
+        .items-table table {
+            width: 100%;
+            font-size: 9px;
+        }
+        
+        .items-table th, .items-table td {
+            padding: 3px;
+        }
+        
+        .totals-section {
+            padding: 8px;
+            font-size: 9px;
+            border-top: 1px dotted #ccc;
+        }
+        
+        .invoice-footer {
+            text-align: center;
+            padding: 8px;
+            font-size: 8px;
+        }
+        
+        .amount-words {
+            display: none;
+        }
+        {{/if}}
+        
+        /* Styles communs */
+        .info-box h3 {
+            {{#if (eq format "POS")}}font-size: 10px;{{else}}font-size: 14px;{{/if}}
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .items-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .items-table th {
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .items-table td {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .text-right {
+            text-align: center;
+        }
+        
+        .totals-row {
+            display: flex;
+            justify-content: flex-end;
+            padding: 5px 0;
+        }
+        
+        .totals-label {
+            {{#if (eq format "POS")}}width: 80px;{{else}}width: 150px;{{/if}}
+            font-weight: 600;
+        }
+        
+        .totals-value {
+            {{#if (eq format "POS")}}width: 80px;{{else}}width: 150px;{{/if}}
+            text-align: right;
+        }
+        
+        .grand-total {
+            font-weight: bold;
+            border-top: 1px solid #ddd;
+            margin-top: 5px;
+            padding-top: 5px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .invoice-container {
+                box-shadow: none;
+                border: none;
+            }
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="restaurant-name">LA TABLE D'OR</div>
+            <h1>FACTURE</h1>
+            {{#if (eq format "A4")}}
+            <div class="restaurant-info">
+                Lot IV 123 Antananarivo • Tel: 034 12 345 67
+            </div>
+            {{/if}}
+        </div>
+        
+        <!-- Info section -->
+        <div class="info-section">
+            <div class="info-box">
+                <h3>Facture N°</h3>
+                <p><strong>{{invoiceNumber}}</strong></p>
+                <p>{{formatDate generatedAt "DD/MM/YYYY HH:mm"}}</p>
+            </div>
+            <div class="info-box">
+                <h3>Client</h3>
+                {{#if order.user}}
+                    <p><strong>{{order.user.fullName}}</strong></p>
+                    {{#unless (eq format "THERMAL")}}<p>{{order.user.phoneNumber}}</p>{{/unless}}
+                {{else}}
+                    <p><strong>{{order.customerName}}</strong></p>
+                    <p>{{order.customerPhone}}</p>
+                {{/if}}
+            </div>
+            {{#if (eq format "POS")}}
+            {{else}}
+                {{#if (eq format "THERMAL")}}
+                {{else}}
+                <div class="info-box">
+                    <h3>Commande</h3>
+                    <p>N°: {{order.id}}</p>
+                    <p>Date: {{formatDate order.createdAt}}</p>
+                </div>
+                {{/if}}
+            {{/if}}
+        </div>
+        
+        <!-- Items table -->
+        <div class="items-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Article</th>
+                        <th class="text-right">Qté</th>
+                        <th class="text-right">Prix</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each order.items}}
+                    <tr>
+                        <td>{{truncate this.menu.name 25}}</td>
+                        <td class="text-right">{{this.quantity}}</td>
+                        <td class="text-right">{{formatPrice this.unitPrice}}</td>
+                        <td class="text-right">{{formatPrice this.subtotal}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Totals -->
+        <div class="totals-section">
+            <div class="totals-row">
+                <div class="totals-label">Sous-total</div>
+                <div class="totals-value">{{formatPrice order.total}}</div>
+            </div>
+            <div class="totals-row grand-total">
+                <div class="totals-label">TOTAL</div>
+                <div class="totals-value">{{formatPrice order.total}}</div>
+            </div>
+            {{#unless (eq format "THERMAL")}}
+            <div class="amount-words">
+                Soit {{numberToWords order.total}} Ariary
+            </div>
+            {{/unless}}
+        </div>
+        
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div>Merci de votre visite !</div>
+            {{#if (eq format "A4")}}
+            <div style="margin-top: 10px;">
+                Facture générée automatiquement
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    
+    <div class="btn-container no-print">
+        <button class="btn" onclick="window.print()">Imprimer</button>
+        <button class="btn" onclick="downloadPDF()">Télécharger PDF</button>
+    </div>
+    
+    <script>
+        function downloadPDF() {
+            window.location.href = window.location.pathname + '/download';
+        }
+    </script>
+</body>
+</html>
