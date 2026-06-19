@@ -312,6 +312,7 @@ model AuditLog {
   action      String
   entity      String
   entityId    String    @map("entity_id")
+  details     Json? 
 
   createdAt   DateTime  @default(now()) @map("created_at")
 

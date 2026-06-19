@@ -3,6 +3,7 @@ import { processUploadedImage, deleteImage } from '../services/image.service.js'
 import { AppError } from '../middlewares/error.middleware.js';
 import logger from '../libs/logger.lib.js';
 import UserRepository from '../repository/user.repository.js';
+// import audit from '../utils/auditHelper.js';
 
 
 class UserService {
@@ -66,6 +67,11 @@ class UserService {
       fields: Object.keys(dataToUpdate),
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE_PROFILE', 'User', userId);
+    // }
+
     return updatedUser;
   }
 
@@ -83,6 +89,12 @@ class UserService {
     const updatedUser = await UserRepository.update(userId, { avatar: null });
 
     logger.logEvent('AVATAR_DELETED', userId);
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'DELETE_AVATAR', 'User', userId);
+    // }
+    
     return updatedUser;
   }
 
@@ -123,6 +135,12 @@ class UserService {
     });
 
     const { password, ...profile } = updatedUser;
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE_ROLE', 'User', userId);
+    // }
+    
     return profile;
   }
 
@@ -141,6 +159,12 @@ class UserService {
     await UserRepository.softDelete(userId);
 
     logger.logEvent('USER_DELETED', userId, { deletedBy: 'ADMIN' });
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'DELETE_USER', 'User', userId);
+    // }
+    
     return true;
   }
 }

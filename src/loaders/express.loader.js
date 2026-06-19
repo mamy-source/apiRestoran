@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { env } from '../config/env.js';
 import logger from '../libs/logger.lib.js';
+import auditMiddleware from '../middlewares/audit.middleware.js';
 
 function expressLoader(app) {
   // Security headers
@@ -27,6 +28,7 @@ function expressLoader(app) {
   
   // Cookie parser
   app.use(cookieParser());
+  app.use(auditMiddleware())
   
   // Trust proxy (for rate limiting behind proxy)
   if (env.NODE_ENV === 'production') {

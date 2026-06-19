@@ -2,6 +2,7 @@ import PaymentRepository from "../repository/payment.repository.js";
 import OrderRepository from "../repository/order.repository.js";
 import { AppError } from "../middlewares/error.middleware.js";
 import logger from "../libs/logger.lib.js";
+// import audit from "../utils/auditHelper.js";
 
 
 
@@ -51,6 +52,11 @@ class PaymentService {
       method,
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'CREATE_PAYMENT', 'Payment', payment.id);
+    // }
+
     return payment;
   }
 
@@ -96,6 +102,11 @@ class PaymentService {
       status: newStatus,
       amount: payment.amount,
     });
+
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, success ? 'PAYMENT_SUCCESS' : 'PAYMENT_FAILED', 'Payment', paymentId);
+    // }
 
     return updated;
   }

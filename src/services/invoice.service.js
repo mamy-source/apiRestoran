@@ -7,6 +7,9 @@ import OrderRepository from '../repository/order.repository.js';
 import { AppError } from '../middlewares/error.middleware.js';
 import logger from '../libs/logger.lib.js';
 import Handlebars from 'handlebars';
+// import audit from '../utils/auditHelper.js';
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -200,7 +203,6 @@ class InvoiceService {
             
             await page.pdf(pdfOptions);
             
-            console.log(' PDF generated successfully:', pdfPath);
             
             return `/uploads/invoices/${invoiceNumber}_${format}.pdf`;
             
@@ -245,6 +247,11 @@ class InvoiceService {
             format,
             pdfUrl,
         });
+
+        // audit log
+        // if(req){
+        //     await audit.fromRequest(req, `CREATE_INVOICE_${format}`, 'Invoice', invoice.id);
+        // }        
         
         return { invoice, pdfUrl, format, action };
     }

@@ -4,8 +4,6 @@ import AuthRepository from "../repository/auth.repository.js";
 import logger from "../libs/logger.lib.js";
 import { AppError } from "../middlewares/error.middleware.js";
 
-
-
 class AuthService {
     async register(userData) {
         const { email, password, fullName, phoneNumber } = userData;
@@ -45,6 +43,15 @@ class AuthService {
         await AuthRepository.updateRefreshToken(user.id, refreshToken);
         logger.logEvent('USER_REGISTERED', user.id, {email: user.email});
 
+
+        // Audit log
+        // if (req) {
+        //     await audit.fromRequest(req, 'REGISTER', 'User', user.id, {
+        //         email: user.email,
+        //         role: user.role,
+        //     });
+        // }
+        
         return {
             user: {
                 id: user.id,
@@ -80,6 +87,13 @@ class AuthService {
         //Save refresh token
         await AuthRepository.updateRefreshToken(user.id, refreshToken);
         logger.logEvent('USER_LOGIN', user.id, {email: user.email});
+
+        // Audit log
+        // if (req) {
+        //     await audit.fromRequest(req, 'LOGIN', 'User', user.id, {
+        //         email: user.email,
+        //     });
+        // }
 
         return {
             user: {
@@ -120,6 +134,10 @@ class AuthService {
     async logout(userId){
         await AuthRepository.updateRefreshToken(userId, null);
         logger.logEvent('USER_LOGOUT', userId);
+        
+        // Audit log
+        // await audit.fromRequest(req, 'LOGOUT', 'User', userId);
+        
         return true;
     }
 
@@ -160,6 +178,9 @@ class AuthService {
         await AuthRepository.updateRefreshToken(user.id, refreshToken);
         logger.logEvent('GUEST_UPGRADED', user.id, {email: user.email});
 
+        // Audit log
+        // await audit.auto(req, 'UPGRADE_TO_CLIENT', 'User', user.id);
+        
         return {
             user: {
                 id: user.id,

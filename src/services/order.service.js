@@ -4,6 +4,7 @@ import MenuRepository from "../repository/menu.repository.js";
 import UserRepository from "../repository/user.repository.js";
 import { AppError } from "../middlewares/error.middleware.js";
 import logger from "../libs/logger.lib.js";
+// import audit from "../utils/auditHelper.js";
 
 
 class OrderService {
@@ -99,6 +100,11 @@ class OrderService {
       itemCount: items.length,
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'CREATE', 'Order', order.id);
+    // }
+
     return order;
   }
 
@@ -164,6 +170,11 @@ class OrderService {
       newStatus: status,
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE_STATUS', 'Order', id);
+    // }
+
     return updated;
   }
 
@@ -219,6 +230,11 @@ class OrderService {
       },
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE_ITEMS', 'Order', id);
+
+    // }
     return updated;
   }
 
@@ -249,6 +265,12 @@ class OrderService {
     }
 
     logger.logEvent('ORDER_CANCELLED', userId, { orderId: id });
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'CANCEL', 'Order', id);
+    // }
+    
     return cancelled;
   }
 

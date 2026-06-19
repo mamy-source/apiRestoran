@@ -3,6 +3,7 @@ import CategoryRepository from "../repository/category.repository.js";
 import { processUploadedImage, deleteImage } from "./image.service.js";
 import logger from "../libs/logger.lib.js";
 import { AppError } from "../middlewares/error.middleware.js";
+// import audit from "../utils/auditHelper.js";
 
 
 class MenuService {
@@ -46,6 +47,10 @@ class MenuService {
       categoryId: data.categoryId,
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'CREATE', 'Menu', menu.id);
+    // }
     return menu;
   }
 
@@ -99,6 +104,12 @@ class MenuService {
     });
 
     logger.logEvent('MENU_UPDATED', null, { menuId: id });
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE', 'Menu', id);
+    // }
+
     return updated;
   }
 
@@ -140,6 +151,12 @@ class MenuService {
 
     await MenuRepository.softDelete(id);
     logger.logEvent('MENU_DELETED', null, { menuId: id });
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'DELETE', 'Menu', id);
+    // }  
+
     return true;
   }
 
@@ -159,6 +176,11 @@ class MenuService {
       available: updated.available 
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'TOGGLE_AVAILABILITY', 'Menu', id);
+    //   await audit.fromRequest(req, '', 'Menu', id);
+    // }
     return updated;
   }
 
@@ -173,6 +195,11 @@ class MenuService {
       availableOnline: !menu.availableOnline,
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'TOGGLE_ONLINE_AVAILABILITY', 'Menu', id);
+
+    // }
     return updated;
   }
 }

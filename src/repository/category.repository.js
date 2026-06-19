@@ -38,7 +38,7 @@ class CategoryRepository {
     }
 
     async updateCategory(id, data){
-        return await prisma.update({
+        return await prisma.category.update({
             where: {id},
             data,
             select: {
@@ -53,7 +53,7 @@ class CategoryRepository {
     }
 
     async softDelete(id){
-        return await prisma.update({
+        return await prisma.category.update({
             where: {id},
             data: { deletedAt: new Date() },
         });

@@ -2,6 +2,9 @@ import { AppError } from "../middlewares/error.middleware.js";
 import { processUploadedImage, deleteImage } from "./image.service.js";
 import logger from "../libs/logger.lib.js";
 import CategoryRepository from "../repository/category.repository.js";
+// import audit from "../utils/auditHelper.js";
+
+
 
 class CategoryService{
     //get all Category
@@ -52,6 +55,12 @@ class CategoryService{
             categoryId: category.id, 
             name: category.name 
         });
+        
+        // Audit log
+        // if(req){
+        //     await audit.fromRequest(req, 'CREATE', 'Category', category.id);
+        // }
+        
         return category;
 
     }
@@ -92,6 +101,11 @@ class CategoryService{
         });
         logger.logEvent('PROFILE_UPDATED', null, {categoryId: catId});
         
+
+        // Audit log
+        // if(req){
+        //     await audit.fromRequest(req, 'UPDATE', 'Category', catId);
+        // }
         return updateCategory;
     }
 
@@ -107,6 +121,12 @@ class CategoryService{
         }
         await CategoryRepository.softDelete(catId);
         logger.logEvent('CATEGORY_DELETED', null, {deletedBy: 'MANAGER'});
+        
+        // // Audit log
+        // if(req){
+        //     await audit.fromRequest(req, 'DELETE', 'Category', catId);
+        // }
+        
         return true;
     }
 }

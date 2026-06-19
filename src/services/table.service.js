@@ -1,6 +1,7 @@
 import TableRepository from "../repository/table.repository.js";
 import {AppError} from '../middlewares/error.middleware.js';
 import logger from '../libs/logger.lib.js';
+// import audit from "../utils/auditHelper.js";
 
 
 class TableService {
@@ -23,6 +24,10 @@ class TableService {
       number: table.number 
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'CREATE', 'RestaurantTable', table.id);
+    // }
     return table;
   }
 
@@ -48,6 +53,11 @@ class TableService {
     });
 
     logger.logEvent('TABLE_UPDATED', null, { tableId: id });
+    
+    // Audit log
+    // if(req){
+    //   await audit.auto(req, 'UPDATE', 'RestaurantTable', id);
+    // }
     return updated;
   }
 
@@ -89,6 +99,11 @@ class TableService {
       newStatus: status 
     });
 
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'UPDATE_STATUS', 'RestaurantTable', id);
+
+    // }
     return updated;
   }
 
@@ -107,6 +122,12 @@ class TableService {
 
     await TableRepository.delete(id);
     logger.logEvent('TABLE_DELETED', null, { tableId: id });
+    
+    // Audit log
+    // if(req){
+    //   await audit.fromRequest(req, 'DELETE', 'RestaurantTable', id);
+
+    // }    
     return true;
   }
 }
