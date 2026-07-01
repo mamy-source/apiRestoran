@@ -9,6 +9,7 @@ import routerOrder from "./order.routes.js";
 import routerPayment from "./payment.routes.js";
 import routerInvoice from "./invoice.routes.js";
 import routerAudit from "./auditLog.routes.js";
+import routerExcel from "./exportExcel.routes.js";
 
 
 
@@ -32,6 +33,7 @@ router.use("/orders", routerOrder);
 router.use("/payments", routerPayment);
 router.use("/invoices", routerInvoice);
 router.use("/audit-logs", routerAudit);
+router.use("/export-excel", routerExcel);
 
 // 404 handler
 router.use((req, res) => {

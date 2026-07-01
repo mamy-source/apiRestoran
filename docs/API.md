@@ -62,11 +62,13 @@ text
 ?format=POS|THERMAL|A4|A5    # Format du PDF
 &action=view|print|download  # Action souhaitée
 
-Exports (ADMIN)
+Exports en Excel (ADMIN)
 Méthode	Endpoint	Description
-GET	/api/exports/orders	Exporter commandes Excel
-GET	/api/exports/products	Exporter produits Excel
-GET	/api/exports/users	Exporter utilisateurs Excel
+POST	/api/exports-excel/orders	Exporter commandes Excel
+POST	/api/exports-excel/products	Exporter produits Excel
+POST	/api/exports-excel/users	Exporter utilisateurs Excel
+DELETE /api/exports-excel/:filename  Supprimer un fichier exporté
+GET /api/exports-excel/download/:filename  Telecharger un fichier excel
 
 Audit Logs (ADMIN)
 Méthode	Endpoint	Description
